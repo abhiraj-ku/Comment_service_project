@@ -1,0 +1,26 @@
+{
+  "name": "cloudsek_assign",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev":"nodemon index.js"
+  },
+  "keywords": ["nodejs", "mongodb", "redis", "posts", "comments", "api"],
+  "author": "Abhishek Kumar",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.1",
+    "mongoose": "^8.16.3",
+    "morgan": "^1.10.0",
+    "redis": "^5.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
