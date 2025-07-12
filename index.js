@@ -6,7 +6,7 @@ require('dotenv').config();
 const PORT = process.env.PORT
 
 const app = express()
-app.get("/",(req,res)=>{
+app.get("/health",(req,res)=>{
     res.send("hello team cloudsek")
 })
 
