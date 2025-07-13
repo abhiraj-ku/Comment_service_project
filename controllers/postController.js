@@ -66,4 +66,182 @@ const getAllPosts = async (req, res) => {
  @access -> Public
 */
 
-const getPostById = async (req, res) => {};
+const getPostById = async (req, res) => {
+  try {
+    const postId = req.param.id;
+    if (!postId) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Missing required fields",
+      });
+    }
+
+    // searcht the post id
+    const post = await Post.findById(postId).lean();
+
+    // return the post
+    return res.status(201).json({
+      sucess: true,
+      message: "Fetch post sucessfully",
+      data: {
+        post,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching post by id: ", error);
+    return res.status(500).json({
+      sucess: false,
+      message: "Internal Server error while fetching post",
+    });
+  }
+};
+
+// Create a post
+/*
+ @route -> POST /api/v1/posts
+ @description -> Creates a post
+ @access -> Public
+*/
+const createPost = async (req, res) => {
+  const { title, content, author } = req.body;
+  try {
+    if (!title || !content || !author) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Missing required fields",
+      });
+    }
+
+    // create post schema to save
+    const post = new Post({
+      title,
+      content,
+      author,
+    });
+
+    const savedPost = await post.save();
+
+    // invalidate cache for post list
+    await invalidateCache(req.app.locals.redis, "posts:*");
+
+    res.status(200).json({
+      sucess: true,
+      message: "Post created sucessfully",
+      data: {
+        savedPost,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching post by id: ", error);
+    return res.status(500).json({
+      sucess: false,
+      message: "Internal Server error while fetching post",
+    });
+  }
+};
+
+// Update a post
+/* 
+/*
+ @route -> POST /api/v1/posts/:id
+ @description -> updates a post by its id
+ @access -> Public
+*/
+const updatePost = async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const postId = req.params.id;
+
+    if (!postId) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Missing required fields",
+      });
+    }
+    if (!title || !content) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Missing required fields",
+      });
+    }
+
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { title, content, updatedAt: new Date() },
+      { new: true, runValidators: true }
+    );
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    // Invalidate cache
+    await invalidateCache(req.app.locals.redis, [
+      `posts:${req.params.id}`,
+      "posts:*",
+    ]);
+
+    res.status(200).json({
+      sucess: true,
+      message: "Post updated sucessfully",
+      data: {
+        post,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating post: ", error);
+    return res.status(500).json({
+      sucess: false,
+      message: "Internal Server error",
+    });
+  }
+};
+
+/**
+ /*
+ @route -> POST /api/v1/posts/:id
+ @description -> updates a post by its id
+ @access -> Public
+*/
+
+const deletePost = async (req, res) => {
+  const postId = req.params.id;
+  try {
+    if (!postId) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Missing required fields",
+      });
+    }
+    const post = await Post.findByIdAndDelete(postId);
+    if (!post)
+      return res.status(404).json({
+        sucess: false,
+        message: "Post not found",
+      });
+
+    await Comment.deleteMany({ postId });
+    await invalidateCache(req.app.locals.redis, [
+      `posts:${req.params.id}`,
+      "posts:*",
+      `comments:post:${req.params.id}:*`,
+    ]);
+
+    res.status(201).json({
+      sucess: true,
+      message: "Post and associated comments deleted successfully",
+    });
+  } catch (error) {
+    if (error.name === "CastError")
+      return res.status(400).json({ error: "Invalid post ID" });
+    res.status(500).json({ error: "Failed to delete post" });
+  }
+};
+
+module.exports = {
+  getAllPosts,
+  getPostById,
+  createPost,
+  updatePost,
+  deletePost,
+};
