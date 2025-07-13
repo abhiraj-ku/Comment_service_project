@@ -5,13 +5,21 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev":"nodemon index.js"
+    "dev": "nodemon index.js"
   },
-  "keywords": ["nodejs", "mongodb", "redis", "posts", "comments", "api"],
+  "keywords": [
+    "nodejs",
+    "mongodb",
+    "redis",
+    "posts",
+    "comments",
+    "api"
+  ],
   "author": "Abhishek Kumar",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "compression": "^1.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
