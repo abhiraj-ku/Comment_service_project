@@ -1,9 +1,5 @@
 # 📝 Post & Comment API (Bonus Rich Text implementation Done)
 
-### Thank You Message
-
-Thank you team Cloudsek for giving me this opportunity i enjoyed and learned few things working on this project. I tried my best to follow the assignment documentation provided to me .
-
 A RESTful API built with Node.js, Express, and MongoDB to manage blog posts and comments. Supports features like:
 
 - CRUD operations for Posts and Comments
