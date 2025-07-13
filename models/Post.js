@@ -41,3 +41,5 @@ postSchema.pre("save", function (next) {
 // Index for better performance
 postSchema.index({ createdAt: -1 });
 postSchema.index({ author: 1 });
+
+module.exports = new mongoose.model("Post", postSchema);

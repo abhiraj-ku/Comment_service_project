@@ -1,9 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const connectRedis = require("./db/cachedDb");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 const PORT = process.env.PORT;
+const commentRoutes = require("./routes/comments");
+const postRoutes = require("./routes/posts");
 
 const connectDb = require("./db/db");
 const morgan = require("morgan");
@@ -13,13 +14,10 @@ const app = express();
 // connect to MongoDB database
 connectDb();
 
-// connect to Redis client
-connectRedis();
-
-// Security Middlewares 
+// Security Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan("combined"))
+app.use(morgan("combined"));
 
 // Rate Limiting for abuse protection
 const limiter = rateLimit({
@@ -28,16 +26,22 @@ const limiter = rateLimit({
   message: "Too many request from this IP address,please try again later",
 });
 // Middleware to track Limiter
-app.use('/api',limiter)
+app.use("/api", limiter);
 
+// use Routes
+app.use("/api/v1/posts", postRoutes);
+app.use("/api/v1/comments", commentRoutes);
 
-app.get("/health", (req, res) => {
-  res.send("hello team cloudsek");
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Hello team Cloudsek,Thank you for considering my assignment",
+  });
 });
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully');
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received, shutting down gracefully");
   await mongoose.connection.close();
   await redisClient.quit();
   process.exit(0);
