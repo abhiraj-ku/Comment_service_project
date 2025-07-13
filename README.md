@@ -8,6 +8,13 @@ A RESTful API built with Node.js, Express, and MongoDB to manage blog posts and 
 - Comment count tracking on Posts
 - Request validation using Joi
 
+## Postman Collection link
+
+```
+https://www.postman.com/avionics-engineer-81502348/workspace/comment/collection/28347821-6ca9648c-ae05-4886-9e79-363b64288c88?action=share&creator=28347821
+
+```
+
 ## 📦 Tech Stack
 
 - **Backend**: Node.js, Express
